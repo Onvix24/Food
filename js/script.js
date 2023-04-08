@@ -137,6 +137,11 @@ window.addEventListener("DOMContentLoaded", function () {
   const modal = document.querySelector(".modal");
   const modalCloseBtn = document.querySelector("[data-close]");
 
+  // Додаємо обробник події "click" на всі кнопки з атрибутом data-modal, щоб відкривати модальне вікно при кліку
+  modalTrigger.forEach((btn) => {
+    btn.addEventListener("click", openModal);
+  });
+
   // Функція, яка відкриває модальне вікно
   function openModal() {
     // Додаємо клас "show" та видаляємо клас "hide" у модальному вікні, щоб показати його на сторінці
@@ -150,11 +155,6 @@ window.addEventListener("DOMContentLoaded", function () {
     clearInterval(modalTimeId);
   }
 
-  // Додаємо обробник події "click" на всі кнопки з атрибутом data-modal, щоб відкривати модальне вікно при кліку
-  modalTrigger.forEach((btn) => {
-    btn.addEventListener("click", openModal);
-  });
-
   // Функція, яка закриває модальне вікно
   function closeModal() {
     // Додаємо клас "hide" та видаляємо клас "show" у модальному вікні, щоб приховати його на сторінці
@@ -165,15 +165,15 @@ window.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "";
   }
 
+  // Додаємо обробник події "click" на кнопку закриття модального вікна, щоб закрити його при кліку на кнопку
+  modalCloseBtn.addEventListener("click", closeModal);
+
   // Додаємо обробник події "click" на модальне вікно, щоб закривати його при кліку поза вікном
   modal.addEventListener("click", (e) => {
     if (e.target === modal) {
       closeModal();
     }
   });
-
-  // Додаємо обробник події "click" на кнопку закриття модального вікна, щоб закрити його при кліку на кнопку
-  modalCloseBtn.addEventListener("click", closeModal);
 
   // Додаємо обробник події "keydown" на документ, щоб закривати модальне вікно при натисканні на клавішу Esc
   document.addEventListener("keydown", (e) => {
@@ -183,7 +183,7 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 
   // Задаємо затримку появи модального вікна
-  const modalTimeId = setTimeout(openModal, 5000);
+  //const modalTimeId = setTimeout(openModal, 5000);
 
   // Функція, яка відкриває модальне вікно при скроллі до кінця сторінки
   function showModalByScroll() {
@@ -198,7 +198,71 @@ window.addEventListener("DOMContentLoaded", function () {
   // Додаємо обробник події scroll до вікна браузера
   window.addEventListener("scroll", showModalByScroll);
 
+  //Використовуєм класи для карточок
 
-
+  class MenuCard {
+    // Клас, що описує об'єкт меню
+    constructor(src, alt, title, descr, price, parentSelector) {
+      // Конструктор класу, який ініціалізує властивості об'єкта
+      this.src = src;
+      this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.price = price;
+      this.parent = document.querySelector(parentSelector);
+      this.transfer = 40; // Курс обміну для переведення ціни в гривні
+      this.changeToUAH(); // Переведення ціни в гривні
+    }
   
+    // Метод для переведення ціни в іншу валюту (гривні)
+    changeToUAH() {
+      this.price = this.price * this.transfer;
+    }
+  
+    // Метод для створення HTML-розмітки елементу меню
+    render() {
+      const element = document.createElement("div");
+      element.innerHTML = `
+        <div class="menu__item">
+          <img src= ${this.src} ${this.alt}>
+          <h3 class="menu__item-subtitle">${this.price}</h3>
+          <div class="menu__item-descr">${this.descr}</div>
+          <div class="menu__item-divider"></div>
+          <div class="menu__item-price">
+            <div class="menu__item-cost">Цена:</div>
+            <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+          </div>
+        </div>
+      `;
+      this.parent.append(element); // Додавання створеного елементу меню в DOM
+    }
+  }
+  
+  // Створення об'єктів класу MenuCard та виклик їх методу render() для відображення на сторінці
+  new MenuCard(
+    "img/tabs/vegy.jpg",
+    "vegy",
+    'Меню "Фитнес"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    9,
+    ".menu .container"
+  ).render();
+
+  new MenuCard(
+    "img/tabs/post.jpg",
+    "post",
+    'Меню "Постное"',
+    "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
+    14,
+    ".menu .container"
+  ).render();
+
+  new MenuCard(
+    "img/tabs/elite.jpg",
+    "elite",
+    "Меню “Премиум”",
+    "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
+    21,
+    ".menu .container"
+  ).render();
 });
