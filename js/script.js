@@ -161,7 +161,7 @@ window.addEventListener("DOMContentLoaded", function () {
     modal.classList.add("hide");
     modal.classList.remove("show");
 
-    // Дозволяємо прокручування сторінки після закриття модального вікна
+    // Дозволяємо прокручування сторінки після закриття модального ві`кна
     document.body.style.overflow = "";
   }
 
@@ -183,7 +183,7 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 
   // Задаємо затримку появи модального вікна
-  //const modalTimeId = setTimeout(openModal, 5000);
+  const modalTimeId = setTimeout(openModal, 5000);
 
   // Функція, яка відкриває модальне вікно при скроллі до кінця сторінки
   function showModalByScroll() {
@@ -213,12 +213,12 @@ window.addEventListener("DOMContentLoaded", function () {
       this.transfer = 40; // Курс обміну для переведення ціни в гривні
       this.changeToUAH(); // Переведення ціни в гривні
     }
-  
+
     // Метод для переведення ціни в іншу валюту (гривні)
     changeToUAH() {
       this.price = this.price * this.transfer;
     }
-  
+
     // Метод для створення HTML-розмітки елементу меню
     render() {
       const element = document.createElement("div");
@@ -237,7 +237,7 @@ window.addEventListener("DOMContentLoaded", function () {
       this.parent.append(element); // Додавання створеного елементу меню в DOM
     }
   }
-  
+
   // Створення об'єктів класу MenuCard та виклик їх методу render() для відображення на сторінці
   new MenuCard(
     "img/tabs/vegy.jpg",
