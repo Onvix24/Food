@@ -202,16 +202,27 @@ window.addEventListener("DOMContentLoaded", function () {
 
   class MenuCard {
     // Клас, що описує об'єкт меню
-    constructor(src, alt, title, descr, price, parentSelector) {
+    constructor(src, alt, title, descr, price, parentSelector, ...classes) {
       // Конструктор класу, який ініціалізує властивості об'єкта
+
+      // Зберігає зображення властивість об'єкта
       this.src = src;
+      // Зберігає опис зображення властивість об'єкта
       this.alt = alt;
+      // Зберігає заголовок меню властивість об'єкта
       this.title = title;
+      // Зберігає опис меню властивість об'єкта
       this.descr = descr;
+      // Зберігає ціну меню властивість об'єкта
       this.price = price;
+      // Зберігає список CSS класів для стилізації властивість об'єкта
+      this.classes = classes;
+      // Зберігає DOM елемент в який буде додано меню властивість об'єкта
       this.parent = document.querySelector(parentSelector);
-      this.transfer = 40; // Курс обміну для переведення ціни в гривні
-      this.changeToUAH(); // Переведення ціни в гривні
+      // Курс обміну для переведення ціни в гривні
+      this.transfer = 40;
+      // Переведення ціни в гривні
+      this.changeToUAH();
     }
 
     // Метод для переведення ціни в іншу валюту (гривні)
@@ -221,19 +232,28 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // Метод для створення HTML-розмітки елементу меню
     render() {
+      // Створення нового DOM елементу div
       const element = document.createElement("div");
+
+      // Перевірка чи є в об'єкта класи для стилізації
+      if (this.classes.length === 0) {
+        // Якщо класів немає, то додати клас 'menu__item'
+        this.element = "menu__item";
+        element.classList.add(this.element);
+      } else {
+        // Якщо є, то додати їх усі до елементу
+        this.classes.forEach((className) => element.classList.add(className));
+      }
       element.innerHTML = `
-        <div class="menu__item">
           <img src= ${this.src} ${this.alt}>
-          <h3 class="menu__item-subtitle">${this.price}</h3>
+          <h3 class="menu__item-subtitle">${this.title}</h3>
           <div class="menu__item-descr">${this.descr}</div>
           <div class="menu__item-divider"></div>
           <div class="menu__item-price">
             <div class="menu__item-cost">Цена:</div>
             <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
           </div>
-        </div>
-      `;
+      `; // HTML-код елементу меню
       this.parent.append(element); // Додавання створеного елементу меню в DOM
     }
   }
@@ -245,7 +265,8 @@ window.addEventListener("DOMContentLoaded", function () {
     'Меню "Фитнес"',
     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
     9,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
   new MenuCard(
@@ -254,7 +275,8 @@ window.addEventListener("DOMContentLoaded", function () {
     'Меню "Постное"',
     "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
     14,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
   new MenuCard(
@@ -263,6 +285,67 @@ window.addEventListener("DOMContentLoaded", function () {
     "Меню “Премиум”",
     "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
     21,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
+
+  // Вибираємо всі форми на сторінці
+  const forms = document.querySelectorAll("form");
+  // Створюємо об'єкт з повідомленнями, що будуть виводитися під час відправки форми
+  const message = {
+    loading: "Загрузка...",
+    success: "Спасибо! Скоро мы с вами свяжемся",
+    failure: "Что-то пошло не так...",
+  };
+
+  // Додаємо обробник події на кожну форму на сторінці
+  forms.forEach((item) => {
+    postData(item);
+  });
+
+  function postData(form) {
+    // Обробляємо подію "submit" на формі
+    form.addEventListener("submit", (e) => {
+      // Відміна стандартної поведінки браузера (надсилання форми)
+      e.preventDefault();
+      // Створюємо блок повідомлення про стан відправки форми
+      let statusMessage = document.createElement("div");
+      statusMessage.classList.add("status");
+      statusMessage.textContent = message.loading;
+      form.appendChild(statusMessage);
+
+      // Створюємо об'єкт запиту
+      const request = new XMLHttpRequest();
+      request.open("POST", "server.php"); // Вказуємо метод та URL сервера, який оброблятиме запит
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      ); // Встановлюємо заголовок запиту
+      const formData = new FormData(form); // Отримуємо дані з форми
+
+      // Створюємо об'єкт FormData з даних форми та перетворюємо його в об'єкт JavaScript
+      const object = {};
+      formData.forEach(function (value, key) {
+        object[key] = value;
+      });
+      const json = JSON.stringify(object); // Перетворюємо об'єкт JavaScript в формат JSON
+
+      // Надсилаємо JSON-дані на сервер за допомогою запиту
+      request.send(json);
+
+      // Обробляємо подію завантаження запиту
+      request.addEventListener("load", () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = message.success;
+          form.reset(); // Очищуємо форму
+          setTimeout(() => {
+            statusMessage.remove(); // Видаляємо повідомлення про стан відправки форми
+          }, 2000);
+        } else {
+          statusMessage.textContent = message.failure;
+        }
+      });
+    });
+  }
 });
