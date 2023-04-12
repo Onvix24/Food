@@ -413,7 +413,8 @@ function postData(form) {
         setTimeout(() => {
           statusMessage.remove(); // Видаляємо повідомлення про стан відправки форми
         }, 2000);
-      } else {
+      }
+      else {
         statusMessage.textContent = message.failure;
       }
     });
