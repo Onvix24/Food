@@ -264,7 +264,8 @@ window.addEventListener("DOMContentLoaded", function () {
     'Меню "Фитнес"',
     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
     9,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
   new MenuCard(
@@ -273,7 +274,8 @@ window.addEventListener("DOMContentLoaded", function () {
     'Меню "Постное"',
     "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
     14,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
   new MenuCard(
@@ -282,23 +284,37 @@ window.addEventListener("DOMContentLoaded", function () {
     "Меню “Премиум”",
     "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
     21,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
+<<<<<<< HEAD
   // Forms
 
   const forms = document.querySelectorAll("form");
   const message = {
     loading: "img/form/spinner.svg",
+=======
+  // Вибираємо всі форми на сторінці
+  const forms = document.querySelectorAll("form");
+  // Створюємо об'єкт з повідомленнями, що будуть виводитися під час відправки форми
+  const message = {
+    loading: "Загрузка...",
+>>>>>>> b9a28446534a5dddb344436fb488c46d152b3d21
     success: "Спасибо! Скоро мы с вами свяжемся",
     failure: "Что-то пошло не так...",
   };
 
+<<<<<<< HEAD
+=======
+  // Додаємо обробник події на кожну форму на сторінці
+>>>>>>> b9a28446534a5dddb344436fb488c46d152b3d21
   forms.forEach((item) => {
     postData(item);
   });
 
   function postData(form) {
+<<<<<<< HEAD
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -318,10 +334,33 @@ window.addEventListener("DOMContentLoaded", function () {
       );
       const formData = new FormData(form);
 
+=======
+    // Обробляємо подію "submit" на формі
+    form.addEventListener("submit", (e) => {
+      // Відміна стандартної поведінки браузера (надсилання форми)
+      e.preventDefault();
+      // Створюємо блок повідомлення про стан відправки форми
+      let statusMessage = document.createElement("div");
+      statusMessage.classList.add("status");
+      statusMessage.textContent = message.loading;
+      form.appendChild(statusMessage);
+
+      // Створюємо об'єкт запиту
+      const request = new XMLHttpRequest();
+      request.open("POST", "server.php"); // Вказуємо метод та URL сервера, який оброблятиме запит
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      ); // Встановлюємо заголовок запиту
+      const formData = new FormData(form); // Отримуємо дані з форми
+
+      // Створюємо об'єкт FormData з даних форми та перетворюємо його в об'єкт JavaScript
+>>>>>>> b9a28446534a5dddb344436fb488c46d152b3d21
       const object = {};
       formData.forEach(function (value, key) {
         object[key] = value;
       });
+<<<<<<< HEAD
       const json = JSON.stringify(object);
 
       request.send(json);
@@ -334,10 +373,29 @@ window.addEventListener("DOMContentLoaded", function () {
           form.reset();
         } else {
           showThanksModal(message.failure);
+=======
+      const json = JSON.stringify(object); // Перетворюємо об'єкт JavaScript в формат JSON
+
+      // Надсилаємо JSON-дані на сервер за допомогою запиту
+      request.send(json);
+
+      // Обробляємо подію завантаження запиту
+      request.addEventListener("load", () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = message.success;
+          form.reset(); // Очищуємо форму
+          setTimeout(() => {
+            statusMessage.remove(); // Видаляємо повідомлення про стан відправки форми
+          }, 2000);
+        } else {
+          statusMessage.textContent = message.failure;
+>>>>>>> b9a28446534a5dddb344436fb488c46d152b3d21
         }
       });
     });
   }
+<<<<<<< HEAD
 
   function showThanksModal(message) {
     const prevModalDialog = document.querySelector(".modal__dialog");
@@ -361,6 +419,8 @@ window.addEventListener("DOMContentLoaded", function () {
       closeModal();
     }, 4000);
   }
+=======
+>>>>>>> b9a28446534a5dddb344436fb488c46d152b3d21
 });
 
 // Вибираємо всі форми на сторінці
