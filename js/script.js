@@ -183,7 +183,7 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 
   // Задаємо затримку появи модального вікна
-  const modalTimeId = setTimeout(openModal, 5000);
+  const modalTimeId = setTimeout(openModal, 500000);
 
   // Функція, яка відкриває модальне вікно при скроллі до кінця сторінки
   function showModalByScroll() {
@@ -300,184 +300,386 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 
   const postData = async (url, data) => {
+    // Функція, яка приймає URL та дані в форматі JSON, та відправляє POST запит на сервер
     const res = await fetch(url, {
-      method: "POST",
+      // Відправляємо запит на сервер з URL та JSON даними
+      method: "POST", // Встановлюємо метод запиту на POST
       headers: {
-        "Content-Type": "application/json",
+        // Встановлюємо заголовки запиту
+        "Content-Type": "application/json", // Встановлюємо тип даних на JSON
       },
-      body: data,
+      body: data, // Встановлюємо JSON дані в тіло запиту
     });
 
-    return await res.json();
+    return await res.json(); // Повертаємо JSON відповідь від сервера
   };
 
   function bindPostData(form) {
+    // Функція, яка вішає обробник на подію submit форми та відправляє дані на сервер
     form.addEventListener("submit", (e) => {
-      e.preventDefault();
+      // Додаємо обробник події submit на форму
+      e.preventDefault(); // Скасовуємо дію по замовчуванню (відправку форми)
 
-      let statusMessage = document.createElement("img");
-      statusMessage.src = message.loading;
+      let statusMessage = document.createElement("img"); // Створюємо елемент зображення
+      statusMessage.src = message.loading; // Встановлюємо зображення завантаження
       statusMessage.style.cssText = `
             display: block;
             margin: 0 auto;
-        `;
-      form.insertAdjacentElement("afterend", statusMessage);
+        `; // Встановлюємо стилі для зображення
+      form.insertAdjacentElement("afterend", statusMessage); // Вставляємо зображення після форми
 
-      const formData = new FormData(form);
+      const formData = new FormData(form); // Створюємо об'єкт FormData з даними форми
 
-      const json = JSON.stringify(Object.fromEntries(formData.entries()));
+      const json = JSON.stringify(Object.fromEntries(formData.entries())); // Конвертуємо дані FormData в JSON формат
 
-      postData("http://localhost:3000/requests", json)
+      postData("http://localhost:3000/requests", json) // Відправляємо дані на сервер
         .then((data) => {
-          console.log(data);
-          showThanksModal(message.success);
-          statusMessage.remove();
+          // Обробляємо відповідь сервера
+          console.log(data); // Виводимо відповідь в консоль
+          showThanksModal(message.success); // Відображаємо модальне вікно з повідомленням про успішну відправку даних
+          statusMessage.remove(); // Видаляємо елемент зображення зі статусом відправки
         })
         .catch(() => {
-          showThanksModal(message.failure);
+          // Обробляємо помилку відправки даних
+          showThanksModal(message.failure); // Відображаємо модальне вікно з повідомленням про невдалу відправку даних
         })
         .finally(() => {
-          form.reset();
+          // Виконується завжди після відправки даних, незалежно від успішності чи невдачі
+          form.reset(); // Очищаємо форму після відправки даних
         });
     });
   }
 
   function showThanksModal(message) {
-    const prevModalDialog = document.querySelector(".modal__dialog");
+    // Функція приймає повідомлення, яке буде відображено в модальному вікні
+    const prevModalDialog = document.querySelector(".modal__dialog"); // Знаходимо елемент модального вікна, який містить контент
 
-    prevModalDialog.classList.add("hide");
-    openModal();
+    prevModalDialog.classList.add("hide"); // Додаємо клас "hide", щоб приховати контент модального вікна
+    openModal(); // Викликаємо функцію, яка відкриє модальне вікно
 
-    const thanksModal = document.createElement("div");
-    thanksModal.classList.add("modal__dialog");
+    const thanksModal = document.createElement("div"); // Створюємо елемент div
+    thanksModal.classList.add("modal__dialog"); // Додаємо клас "modal__dialog" до створеного елемента
     thanksModal.innerHTML = `
           <div class="modal__content">
               <div class="modal__close" data-close>×</div>
               <div class="modal__title">${message}</div>
           </div>
-      `;
-    document.querySelector(".modal").append(thanksModal);
+      `; // Додаємо html-код для відображення модального вікна з переданим повідомленням
+    document.querySelector(".modal").append(thanksModal); // Додаємо створений елемент до модального вікна
     setTimeout(() => {
-      thanksModal.remove();
-      prevModalDialog.classList.add("show");
-      prevModalDialog.classList.remove("hide");
-      closeModal();
-    }, 4000);
+      // Запускаємо тайме
+      thanksModal.remove(); // Видаляємо створений елемент модального вікна
+      prevModalDialog.classList.add("show"); // Додаємо клас "show", щоб показати контент модального вікна
+      prevModalDialog.classList.remove("hide"); // Видаляємо клас "hide"
+      closeModal(); // Викликаємо функцію, яка закриє модальне вікно
+    }, 4000); // Задаємо час, через який буде виконано функцію в мілісекундах
   }
 
   //Slider
 
-  const slides = document.querySelectorAll(".offer__slide"),
-    prev = document.querySelector(".offer__slider-prev"),
-    next = document.querySelector(".offer__slider-next"),
-    total = document.querySelector("#total"),
-    current = document.querySelector("#current"),
-    slidesWrapper = document.querySelector(".offer__slider-wrapper"),
-    width = window.getComputedStyle(slidesWrapper).width,
-    slidesField = document.querySelector(".offer__slider-inner");
-  let slideIndex = 1;
-  let offset = 0;
+  const slides = document.querySelectorAll(".offer__slide"), // Знаходимо всі елементи слайдів
+    slider = document.querySelector(".offer__slider"), //Знаходимо перший елемент з класом "offer__slider"
+    prev = document.querySelector(".offer__slider-prev"), // Знаходимо елемент кнопки "попередній слайд"
+    next = document.querySelector(".offer__slider-next"), // Знаходимо елемент кнопки "наступний слайд"
+    total = document.querySelector("#total"), // Знаходимо елемент, в якому буде відображатися загальна кількість слайдів
+    current = document.querySelector("#current"), // Знаходимо елемент, в якому буде відображатися поточний номер слайда
+    slidesWrapper = document.querySelector(".offer__slider-wrapper"), // Знаходимо обгортку слайдів
+    width = window.getComputedStyle(slidesWrapper).width, // Визначаємо ширину обгортки слайдів
+    slidesField = document.querySelector(".offer__slider-inner"); // Знаходимо елемент, який містить всі слайди
+  let slideIndex = 1; // Встановлюємо початковий номер слайда
+  let offset = 0; // Встановлюємо початкове зміщення слайдів
 
   if (slides.length < 10) {
-    total.textContent = `0${slides.length}`;
-    current.textContent = `0${slideIndex}`;
+    // Перевіряємо, чи кількість слайдів менше 10
+    total.textContent = `0${slides.length}`; // Якщо так, то додаємо 0 перед загальною кількістю слайдів
+    current.textContent = `0${slideIndex}`; // Якщо так, то додаємо 0 перед поточним номером слайда
   } else {
-    total.textContent = slides.length;
-    current.textContent = slideIndex;
+    total.textContent = slides.length; // Якщо кількість слайдів більше або дорівнює 10, то виводимо звичайну загальну кількість слайдів
+    current.textContent = slideIndex; // Якщо кількість слайдів більше або дорівнює 10, то виводимо звичайний поточний номер слайда
   }
 
-  slidesField.style.width = 100 * slides.length + "%";
-  slidesField.style.display = "flex";
-  slidesField.style.transition = "0.5s all";
+  slidesField.style.width = 100 * slides.length + "%"; // Встановлюємо ширину поля слайдів
+  slidesField.style.display = "flex"; // Встановлюємо стиль відображення для поля слайдів
+  slidesField.style.transition = "0.5s all"; // Встановлюємо стиль переходу для поля слайдів
 
-  slidesWrapper.style.overflow = "hidden";
+  slidesWrapper.style.overflow = "hidden"; // Встановлюємо стиль переповнення для обгортки слайдів
 
   slides.forEach((slide) => {
-    slide.style.width = width;
+    // Проходимось по кожному слайду
+    slide.style.width = width; // Встановлюємо ширину для кожного слайда
   });
 
+  slider.style.position = "relative";
+
+  const indicators = document.createElement("ol"),
+    dots = [];
+  indicators.classList.add("carousel-indicators");
+  indicators.style.cssText = `
+  position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 15;
+    display: flex;
+    justify-content: center;
+    margin-right: 15%;
+    margin-left: 15%;
+    list-style: none; 
+    `;
+  slider.append(indicators);
+
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement("li");
+    dot.setAttribute("data-slide-to", i + 1);
+    dot.style.cssText = `
+    box-sizing: content-box;
+    flex: 0 1 auto;
+    width: 30px;
+    height: 6px;
+    margin-right: 3px;
+    margin-left: 3px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    opacity: .5;
+    transition: opacity .6s ease;
+    `;
+    if (i == 0) {
+      dot.style.opacity = 1;
+    }
+    indicators.append(dot);
+    dots.push(dot);
+  }
+
+  function deleteNotDigits(str) {
+    return +str.replace(/\D/g, "");
+  }
+
+  function opacityDot() {
+    dots.forEach((dot) => (dot.style.opacity = ".5"));
+    dots[slideIndex - 1].style.opacity = "1";
+  }
   next.addEventListener("click", () => {
-    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+    // додаємо обробник події для кнопки "next"
+    if (offset == deleteNotDigits(width) * (slides.length - 1)) {
+      // якщо досягнуто останнього слайда, перехід на перший слайд
       offset = 0;
     } else {
-      offset += +width.slice(0, width.length - 2);
+      // інакше збільшуємо відступ на ширину слайда
+      offset += deleteNotDigits(width);
     }
 
-    slidesField.style.transform = `translateX(-${offset}px)`;
+    slidesField.style.transform = `translateX(-${offset}px)`; // зміщуємо вміст блоку зі слайдами
 
     if (slideIndex == slides.length) {
+      // якщо досягнуто останнього слайда, перехід на перший слайд
       slideIndex = 1;
     } else {
+      // інакше збільшуємо індекс поточного слайда
       slideIndex++;
     }
 
     if (slides.length < 10) {
+      // якщо кількість слайдів менша за 10, додаємо перед індексом "0"
       current.textContent = `0${slideIndex}`;
     } else {
+      // інакше відображаємо просто індекс
       current.textContent = slideIndex;
     }
+
+    opacityDot();
   });
 
   prev.addEventListener("click", () => {
+    // додаємо обробник події для кнопки "prev"
     if (offset == 0) {
-      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+      // якщо досягнуто першого слайда, перехід на останній слайд
+      offset = deleteNotDigits(width) * (slides.length - 1);
     } else {
-      offset -= +width.slice(0, width.length - 2);
+      // інакше зменшуємо відступ на ширину слайда
+      offset -= deleteNotDigits(width);
     }
 
-    slidesField.style.transform = `translateX(-${offset}px)`;
+    slidesField.style.transform = `translateX(-${offset}px)`; // зміщуємо вміст блоку зі слайдами
 
     if (slideIndex == 1) {
+      // якщо досягнуто першого слайда, перехід на останній слайд
       slideIndex = slides.length;
     } else {
+      // інакше зменшуємо індекс поточного слайда
       slideIndex--;
     }
 
     if (slides.length < 10) {
+      // якщо кількість слайдів менша за 10, додаємо перед індексом "0"
       current.textContent = `0${slideIndex}`;
     } else {
-      current.textContent = slideIndex;
+      // інакше відображаємо просто
     }
+
+    opacityDot();
   });
 
+  dots.forEach((dot) => {
+    dot.addEventListener("click", (e) => {
+      const slideTo = e.target.getAttribute("data-slide-to");
+
+      slideIndex = slideTo;
+      offset = deleteNotDigits(width) * (slideTo - 1);
+
+      slidesField.style.transform = `translateX(-${offset}px)`; // зміщуємо вміст блоку зі слайдами
+
+      if (slides.length < 10) {
+        // якщо кількість слайдів менша за 10, додаємо перед індексом "0"
+        current.textContent = `0${slideIndex}`;
+      } else {
+        // інакше відображаємо просто індекс
+        current.textContent = slideIndex;
+      }
+
+      opacityDot();
+    });
+  });
+
+  // calc
+
+  const result = document.querySelector('.calculating__result span');
+  let sex = "female",
+      height, weight, age, 
+      ratio=  1.3;
+  
+  function calcTotal(){
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = "____";
+      return;
+    }
+
+    if (sex === 'female') {
+        result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+    } else {
+        result.textContent =  Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+    }
+  }
+
+  calcTotal();
+
+  function getStaticInformation(parentSelector, activeClass){
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+      
+    document.querySelector(parentSelector).addEventListener('click', (e) => {
+      if (e.target.getAttribute('data-ratio')) {
+          ratio = +e.target.getAttribute('data-ratio');
+      } else {
+          sex = e.target.getAttribute('id');
+      }
+
+      elements.forEach(elem => {
+          elem.classList.remove(activeClass);
+      });
+
+      e.target.classList.add(activeClass);
+
+      calcTotal();
+  });
+  }
+
+  
+
+  // function getStaticInformation(parentSelector, activeClass) {
+  //   const elements = document.querySelectorAll(`${parentSelector} div`);
+
+  //   document.querySelector(parentSelector).addEventListener("click", (e) => {
+  //     if (e.target.getAttribute("data-ratio")) {
+  //       ratio = +e.target.getAttribute("data-ratio");
+  //     } else {
+  //       sex = e.target.getAttribute("id");
+  //     }
+
+  //     elements.forEach((elem) => {
+  //       elem.classList.remove(activeClass);
+  //     });
+
+  //     e.target.classList.add(activeClass);
+
+  //     calcTotal();
+  //   });
+  // }
+
+  getStaticInformation("#gender", "calculating__choose-item_active");
+  getStaticInformation(".calculating__choose_big" , "calculating__choose-item_active");
+
+  function getDynamicInformation(selector) {
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+        switch(input.getAttribute('id')) {
+            case "height":
+                height = +input.value;
+                break;
+            case "weight":
+                weight = +input.value;
+                break;
+            case "age":
+                age = +input.value;
+                break;
+        }calcTotal(); 
+    });
+    
+}
+
+getDynamicInformation('#height');
+getDynamicInformation('#weight');
+getDynamicInformation('#age');
+});
+
+
+//   // // Виводимо початковий слайд
   // showSlides(slideIndex);
 
+  // // Встановлюємо кількість слайдів у загальному числі слайдів
   // if (slides.length < 10){
-  //   total.textContent = `0${slides.length}`;
+  // total.textContent = 0${slides.length};
   // } else {
-  //   total.textContent = slides.length;
+  // total.textContent = slides.length;
   // }
 
+  // // Функція для відображення слайдів
   // function showSlides(n){
-  //   if(n > slides.length){
-  //     slideIndex = 1;
-  //   }
-
-  //   if (n < 1){
-  //     slideIndex = slides.length;
-  //   }
-
-  //   slides.forEach(item => item.style.display = "none");
-
-  //   slides[slideIndex - 1].style.display = "block";
-
-  //   if (slides.length < 10){
-  //     current.textContent = `0${slideIndex}`;
-  //   } else {
-  //     current.textContent = slideIndex;
-  //   }
-
-  //  }
-
-  //  function plusSlider(n){
-  //   showSlides(slideIndex += n);
+  // // Якщо число n більше кількості слайдів, то переходимо до першого слайда
+  // if(n > slides.length){
+  // slideIndex = 1;
+  // }
+  // // Якщо число n менше першого слайда, то переходимо до останнього
+  // if (n < 1){
+  // slideIndex = slides.length;
   // }
 
+  // // Приховуємо всі слайди
+  // slides.forEach(item => item.style.display = "none");
+
+  // // Відображаємо лише поточний слайд
+  // slides[slideIndex - 1].style.display = "block";
+
+  // // Встановлюємо відповідний номер поточного слайда в рядку
+  // if (slides.length < 10){
+  // current.textContent = 0${slideIndex};
+  // } else {
+  // current.textContent = slideIndex;
+  // }
+  // }
+
+  // // Функція для переключення на наступний або попередній слайд
+  // function plusSlider(n){
+  // showSlides(slideIndex += n);
+  // }
+
+  // // Обробники подій для кнопок "Попередній" та "Наступний"
   // prev.addEventListener('click', () => {
-  //   plusSlider(-1);
+  // plusSlider(-1);
   // });
 
   // next.addEventListener('click', () => {
-  //   plusSlider(1);
+  // plusSlider(1);
   // });
-});
