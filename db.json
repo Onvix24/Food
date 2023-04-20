@@ -24,59 +24,9 @@
   ],
   "requests": [
     {
-      "name": "1241241",
-      "phone": "12222222222222",
+      "name": "vitalik",
+      "phone": "063063063",
       "id": 1
-    },
-    {
-      "name": "onvix",
-      "phone": "+380242424244",
-      "id": 2
-    },
-    {
-      "name": "max",
-      "phone": "2424242424",
-      "id": 3
-    },
-    {
-      "name": "onvix",
-      "phone": "+380242424024",
-      "id": 4
-    },
-    {
-      "name": "max",
-      "phone": "242424242",
-      "id": 5
-    },
-    {
-      "name": "veveve",
-      "phone": "231231231",
-      "id": 6
-    },
-    {
-      "name": "w23423",
-      "phone": "124214",
-      "id": 7
-    },
-    {
-      "name": "maksim",
-      "phone": "098098098",
-      "id": 8
-    },
-    {
-      "name": "e2",
-      "phone": "32",
-      "id": 9
-    },
-    {
-      "name": "qfqf",
-      "phone": "141",
-      "id": 10
-    },
-    {
-      "name": "24",
-      "phone": "r2",
-      "id": 11
     }
   ]
 }
